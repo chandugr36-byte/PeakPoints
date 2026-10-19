@@ -1,0 +1,19 @@
+{
+  "name": "peakpoints",
+  "version": "1.0.0",
+  "description": "PeakPoints - courses, assignments and tests",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.5.0",
+    "cookie-session": "^2.1.0",
+    "ejs": "^3.1.10",
+    "express": "^4.22.3"
+  }
+}

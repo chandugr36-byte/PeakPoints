@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+<p><a href="/intern/courses/<%= test.course_id %>">&larr; Back to course</a></p>
+<h1><%= test.title %><%= isRetest ? " (Re-test)" : "" %></h1>
+<p class="muted"><%= test.questions.length %> questions &middot; pass mark <%= test.pass_mark %>%</p>
+<% if (!test.questions.length) { %>
+  <div class="card"><p>This test has no questions yet.</p></div>
+<% } else { %>
+<p class="flash error">You can submit this test only once. Review your answers before submitting.</p>
+<form method="post" action="/intern/tests/<%= test.id %>" data-confirm="Submit your answers? You cannot change them afterwards.">
+  <%- csrfField() %>
+  <% test.questions.forEach((q, i) => { %>
+  <div class="card">
+    <p><b><%= i + 1 %>. <%= q.text %></b></p>
+    <% q.options.forEach((o, j) => { %>
+      <label class="check"><input type="radio" name="q<%= q.id %>" value="<%= j %>"> <%= o %></label>
+    <% }) %>
+  </div>
+  <% }) %>
+  <button class="btn">Submit test</button>
+</form>
+<% } %>
+<%- include('../partials/footer') %>

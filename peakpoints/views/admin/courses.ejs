@@ -1,0 +1,27 @@
+<%- include('../partials/header') %>
+<h1>Courses</h1>
+<div class="card">
+  <h2>Post a new course</h2>
+  <form method="post" action="/admin/courses">
+    <%- csrfField() %>
+    <label>Title <input name="title" required maxlength="200"></label>
+    <label>Description <textarea name="description" rows="3" maxlength="2000"></textarea></label>
+    <button class="btn">Create course</button>
+  </form>
+</div>
+<div class="card">
+  <h2>All courses</h2>
+  <% if (!courses.length) { %><p class="muted">No courses yet.</p><% } else { %>
+  <table>
+    <tr><th>Title</th><th>Lessons</th><th>Tests</th><th>Interns</th><th></th></tr>
+    <% courses.forEach(c => { %>
+    <tr>
+      <td><a href="/admin/courses/<%= c.id %>"><%= c.title %></a></td>
+      <td><%= c.lessons %></td><td><%= c.tests %></td><td><%= c.interns %></td>
+      <td><a href="/admin/courses/<%= c.id %>">Manage</a></td>
+    </tr>
+    <% }) %>
+  </table>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

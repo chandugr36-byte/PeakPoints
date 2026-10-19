@@ -1,0 +1,60 @@
+<%- include('../partials/header') %>
+<p><a href="/admin/interns">&larr; All interns</a></p>
+<h1><%= intern.name %></h1>
+<p class="muted"><%= intern.email %></p>
+
+<div class="card">
+  <h2>Assigned courses</h2>
+  <% if (!courses.length) { %><p class="muted">No courses exist yet. <a href="/admin/courses">Create one</a>.</p><% } else { %>
+  <form method="post" action="/admin/interns/<%= intern.id %>/courses">
+    <%- csrfField() %>
+    <% courses.forEach(c => { %>
+      <label class="check"><input type="checkbox" name="course_ids" value="<%= c.id %>" <%= c.enrolled ? 'checked' : '' %>> <%= c.title %></label>
+    <% }) %>
+    <button class="btn">Save assignments</button>
+  </form>
+  <% } %>
+</div>
+
+<div class="card">
+  <h2>Test results</h2>
+  <% if (!attempts.length) { %><p class="muted">No attempts yet.</p><% } else { %>
+  <table>
+    <tr><th>Test</th><th>Score</th><th>Result</th><th>When</th><th>Re-test</th></tr>
+    <% attempts.forEach(a => { %>
+    <tr><td><%= a.test %></td><td><%= a.score %>/<%= a.total %></td>
+      <td><span class="tag <%= a.passed ? 'pass' : 'fail' %>"><%= a.passed ? 'Passed' : 'Failed' %></span></td>
+      <td><%= fmt(a.taken_at) %></td>
+      <td>
+        <% if (a.is_latest) { %>
+          <% if (a.has_grant) { %>
+            <span class="tag pending">Re-test allowed</span>
+            <form method="post" action="/admin/tests/<%= a.test_id %>/retest/cancel" class="inline">
+              <%- csrfField() %><input type="hidden" name="user_id" value="<%= intern.id %>"><input type="hidden" name="back" value="intern">
+              <button class="btn small secondary">Cancel</button>
+            </form>
+          <% } else { %>
+            <form method="post" action="/admin/tests/<%= a.test_id %>/retest" class="inline" data-confirm="Allow this intern to retake this test?">
+              <%- csrfField() %><input type="hidden" name="user_id" value="<%= intern.id %>"><input type="hidden" name="back" value="intern">
+              <button class="btn small">Allow re-test</button>
+            </form>
+          <% } %>
+        <% } %>
+      </td></tr>
+    <% }) %>
+  </table>
+  <% } %>
+</div>
+
+<div class="card">
+  <h2>Account</h2>
+  <form method="post" action="/admin/interns/<%= intern.id %>/password">
+    <%- csrfField() %>
+    <label>Reset password (min 8 characters) <input type="text" name="password" minlength="8" required autocomplete="off"></label>
+    <button class="btn secondary">Reset password</button>
+  </form>
+  <form method="post" action="/admin/interns/<%= intern.id %>/delete" data-confirm="Delete this intern and all their results?">
+    <%- csrfField() %><button class="btn danger">Delete intern</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

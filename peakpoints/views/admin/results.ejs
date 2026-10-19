@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+<p><a href="/admin/tests/<%= test.id %>">&larr; <%= test.title %></a></p>
+<h1>Results: <%= test.title %></h1>
+<p class="muted">Interns can take a test only once. Use <b>Allow re-test</b> to let an intern retake it one more time.</p>
+<div class="card">
+<% if (!rows.length) { %><p class="muted">No one has taken this test yet.</p><% } else { %>
+  <table>
+    <tr><th>Intern</th><th>Email</th><th>Score</th><th>%</th><th>Result</th><th>When</th><th>Re-test</th></tr>
+    <% rows.forEach(a => { %>
+    <tr>
+      <td><a href="/admin/interns/<%= a.user_id %>"><%= a.name %></a></td>
+      <td><%= a.email %></td>
+      <td><%= a.score %>/<%= a.total %></td>
+      <td><%= Math.round(100 * a.score / a.total) %>%</td>
+      <td><span class="tag <%= a.passed ? 'pass' : 'fail' %>"><%= a.passed ? 'Passed' : 'Failed' %></span></td>
+      <td><%= fmt(a.taken_at) %></td>
+      <td>
+        <% if (a.is_latest) { %>
+          <% if (a.has_grant) { %>
+            <span class="tag pending">Re-test allowed</span>
+            <form method="post" action="/admin/tests/<%= test.id %>/retest/cancel" class="inline">
+              <%- csrfField() %><input type="hidden" name="user_id" value="<%= a.user_id %>">
+              <button class="btn small secondary">Cancel</button>
+            </form>
+          <% } else { %>
+            <form method="post" action="/admin/tests/<%= test.id %>/retest" class="inline" data-confirm="Allow <%= a.name %> to retake this test?">
+              <%- csrfField() %><input type="hidden" name="user_id" value="<%= a.user_id %>">
+              <button class="btn small">Allow re-test</button>
+            </form>
+          <% } %>
+        <% } %>
+      </td>
+    </tr>
+    <% }) %>
+  </table>
+<% } %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<p><a href="/intern/courses/<%= test.course_id %>">&larr; Back to course</a></p>
+<h1>Result: <%= test.title %></h1>
+<div class="card result <%= attempt.passed ? 'pass' : 'fail' %>">
+  <h2><%= attempt.passed ? 'Congratulations, you passed!' : 'Not passed this time' %></h2>
+  <p class="big"><%= attempt.score %> / <%= attempt.total %> (<%= percent %>%)</p>
+  <p class="muted">Pass mark: <%= test.pass_mark %>%</p>
+  <% if (retestAllowed) { %>
+    <p><span class="tag pending">Re-test allowed</span> Your administrator has allowed you to retake this test.</p>
+    <a class="btn" href="/intern/tests/<%= test.id %>">Start re-test</a>
+  <% } else { %>
+    <p class="muted">Each test can be taken once. If you need a re-test, please contact your administrator.</p>
+  <% } %>
+</div>
+<h2>Review</h2>
+<% questions.forEach((q, i) => { %>
+<div class="card">
+  <p><b><%= i + 1 %>. <%= q.text %></b></p>
+  <ul>
+    <% q.options.forEach((o, j) => { %>
+      <li class="<%= j === q.correct ? 'correct' : (j === q.chosen ? 'wrong' : '') %>">
+        <%= o %>
+        <%= j === q.correct ? ' ✓ correct answer' : '' %><%= (j === q.chosen && j !== q.correct) ? ' ✗ your answer' : '' %><%= (j === q.chosen && j === q.correct) ? ' (your answer)' : '' %>
+      </li>
+    <% }) %>
+  </ul>
+  <% if (q.chosen === -1) { %><p class="muted">You did not answer this question.</p><% } %>
+</div>
+<% }) %>
+<%- include('../partials/footer') %>

@@ -1,0 +1,41 @@
+<%- include('../partials/header') %>
+<p><a href="/intern">&larr; My courses</a></p>
+<h1><%= course.title %></h1>
+<p><%= course.description %></p>
+
+<div class="card">
+  <h2>Lessons</h2>
+  <% if (!lessons.length) { %><p class="muted">No lessons yet.</p><% } %>
+  <% lessons.forEach((l, i) => { %>
+    <details <%= i === 0 ? 'open' : '' %>>
+      <summary><%= i + 1 %>. <%= l.title %></summary>
+      <div class="prose"><%= l.content %></div>
+      <% if (l.video_url) { %><p><a class="btn small secondary" href="<%= l.video_url %>" target="_blank" rel="noopener noreferrer">Open video / resource</a></p><% } %>
+    </details>
+  <% }) %>
+</div>
+
+<div class="card">
+  <h2>Tests</h2>
+  <% if (!tests.length) { %><p class="muted">No tests for this course yet.</p><% } %>
+  <% tests.forEach(t => { %>
+    <div class="row">
+      <div><b><%= t.title %></b>
+        <span class="muted"> &middot; <%= t.questions %> questions &middot; pass mark <%= t.pass_mark %>%</span>
+        <% if (t.attempted) { %><br>Your score: <%= t.best %>%
+          <span class="tag <%= t.passed ? 'pass' : 'fail' %>"><%= t.passed ? 'Passed' : 'Not passed' %></span>
+          <% if (t.retest) { %><span class="tag pending">Re-test allowed</span><% } %><% } %>
+      </div>
+      <div>
+      <% if (!t.questions) { %><span class="muted">Not ready</span>
+      <% } else if (!t.attempted) { %><a class="btn small" href="/intern/tests/<%= t.id %>">Start test</a>
+      <% } else if (t.retest) { %>
+        <a class="btn small" href="/intern/tests/<%= t.id %>">Start re-test</a>
+      <% } else { %>
+        <a class="btn small secondary" href="/intern/attempts/<%= t.last_attempt %>">View result</a>
+      <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<%- include('../partials/footer') %>

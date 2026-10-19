@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+<h1>Interns</h1>
+<div class="card">
+  <h2>Add intern</h2>
+  <form method="post" action="/admin/interns">
+    <%- csrfField() %>
+    <label>Full name <input name="name" required maxlength="100"></label>
+    <label>Email (used to log in) <input type="email" name="email" required maxlength="200"></label>
+    <label>Initial password (min 8 characters) <input type="text" name="password" required minlength="8" autocomplete="off"></label>
+    <button class="btn">Create intern</button>
+  </form>
+</div>
+<div class="card">
+  <h2>All interns</h2>
+  <% if (!interns.length) { %><p class="muted">No interns yet.</p><% } else { %>
+  <table>
+    <tr><th>Name</th><th>Email</th><th>Courses</th><th>Attempts</th><th></th></tr>
+    <% interns.forEach(s => { %>
+    <tr>
+      <td><a href="/admin/interns/<%= s.id %>"><%= s.name %></a></td>
+      <td><%= s.email %></td><td><%= s.courses %></td><td><%= s.attempts %></td>
+      <td><a href="/admin/interns/<%= s.id %>">Manage</a></td>
+    </tr>
+    <% }) %>
+  </table>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

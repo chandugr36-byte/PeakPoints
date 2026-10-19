@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<h1>My courses</h1>
+<% if (!courses.length) { %>
+  <div class="card"><p>No courses have been assigned to you yet. Please check back later.</p></div>
+<% } else { %>
+<div class="grid">
+  <% courses.forEach(c => { %>
+  <a class="card course" href="/intern/courses/<%= c.id %>">
+    <h2><%= c.title %></h2>
+    <p><%= c.description %></p>
+    <p class="muted"><%= c.lessons %> lessons &middot; <%= c.tests %> tests
+      <% if (c.tests) { %>&middot; <%= c.passed %>/<%= c.tests %> passed<% } %></p>
+  </a>
+  <% }) %>
+</div>
+<% } %>
+<%- include('../partials/footer') %>

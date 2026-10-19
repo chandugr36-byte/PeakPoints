@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<div class="card narrow">
+  <h1><%= heading %></h1>
+  <% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/login/<%= role %>">
+    <%- csrfField() %>
+    <label>Email <input type="email" name="email" required autofocus></label>
+    <label>Password <input type="password" name="password" required></label>
+    <button class="btn">Login</button>
+  </form>
+  <p class="muted">
+    <% if (role === 'admin') { %>Are you an intern? <a href="/login/intern">Intern Login</a>
+    <% } else { %>Are you an administrator? <a href="/login/admin">Admin Login</a><% } %>
+  </p>
+  <% if (role === 'intern') { %><p class="muted">Intern accounts are created by your administrator.</p><% } %>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,50 @@
+<%- include('../partials/header') %>
+<p><a href="/admin/courses/<%= test.course_id %>">&larr; <%= test.course_title %></a></p>
+<h1><%= test.title %></h1>
+
+<div class="card">
+  <h2>Test settings</h2>
+  <form method="post" action="/admin/tests/<%= test.id %>">
+    <%- csrfField() %>
+    <label>Title <input name="title" value="<%= test.title %>" required maxlength="200"></label>
+    <label>Pass mark (%) <input type="number" name="pass_mark" value="<%= test.pass_mark %>" min="0" max="100"></label>
+    <button class="btn">Save</button>
+  </form>
+  <p><a href="/admin/tests/<%= test.id %>/results">View intern results</a></p>
+  <form method="post" action="/admin/tests/<%= test.id %>/delete" data-confirm="Delete this test and all its results?">
+    <%- csrfField() %><button class="btn danger">Delete test</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Questions (<%= questions.length %>)</h2>
+  <% questions.forEach((q, i) => { %>
+    <div class="q">
+      <div class="row">
+        <b><%= i + 1 %>. <%= q.text %></b>
+        <form method="post" action="/admin/questions/<%= q.id %>/delete" data-confirm="Delete this question?">
+          <%- csrfField() %><button class="btn small danger">Delete</button>
+        </form>
+      </div>
+      <ul>
+        <% q.options.forEach((o, j) => { %>
+          <li class="<%= j === q.correct ? 'correct' : '' %>"><%= o %><%= j === q.correct ? '  ✓' : '' %></li>
+        <% }) %>
+      </ul>
+    </div>
+  <% }) %>
+  <h3>Add multiple-choice question</h3>
+  <form method="post" action="/admin/tests/<%= test.id %>/questions">
+    <%- csrfField() %>
+    <label>Question <textarea name="text" rows="2" required maxlength="1000"></textarea></label>
+    <% [1,2,3,4].forEach(n => { %>
+      <label class="opt">
+        <input type="radio" name="correct" value="<%= n %>" <%= n === 1 ? 'checked' : '' %>>
+        <input name="option<%= n %>" placeholder="Option <%= n %><%= n > 2 ? ' (optional)' : '' %>" maxlength="300" <%= n <= 2 ? 'required' : '' %>>
+      </label>
+    <% }) %>
+    <p class="muted">Select the radio button next to the correct answer.</p>
+    <button class="btn">Add question</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,40 @@
+<% const bc = typeof bodyClass !== 'undefined' ? bodyClass : ''; %>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' · ' : '' %>PeakPoints</title>
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body class="<%= bc %>">
+<header class="top">
+  <a class="brand" href="/"><img class="logo" src="/static/img/logo.png" alt="PeakPoints Technical Solutions Pvt Ltd"></a>
+  <nav>
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/courses">Courses</a>
+      <a href="/admin/interns">Interns</a>
+    <% } else { %>
+      <a href="/intern">My courses</a>
+    <% } %>
+    <form method="post" action="/logout" class="inline">
+      <%- csrfField() %>
+      <button class="link">Logout (<%= user.name %>)</button>
+    </form>
+  <% } else { %>
+    <details class="dropdown">
+      <summary class="btn">Login &#9662;</summary>
+      <div class="menu">
+        <a href="/login/admin">Admin Login</a>
+        <a href="/login/intern">Intern Login</a>
+      </div>
+    </details>
+  <% } %>
+  </nav>
+</header>
+<main class="wrap <%= bc === 'home' ? 'wrap-home' : '' %>">
+<% if (flash) { %><div class="flash <%= flash.type %>"><%= flash.msg %></div><% } %>

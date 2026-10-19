@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<h1>Admin dashboard</h1>
+<div class="stats">
+  <div class="stat"><b><%= stats.interns %></b>Interns</div>
+  <div class="stat"><b><%= stats.courses %></b>Courses</div>
+  <div class="stat"><b><%= stats.tests %></b>Tests</div>
+  <div class="stat"><b><%= stats.attempts %></b>Test attempts</div>
+</div>
+<p>
+  <a class="btn" href="/admin/courses">Manage courses &amp; tests</a>
+  <a class="btn secondary" href="/admin/interns">Manage interns</a>
+</p>
+<div class="card">
+  <h2>Recent test attempts</h2>
+  <% if (!recent.length) { %><p class="muted">No attempts yet.</p><% } else { %>
+  <table>
+    <tr><th>Intern</th><th>Test</th><th>Score</th><th>Result</th><th>When</th></tr>
+    <% recent.forEach(a => { %>
+    <tr>
+      <td><%= a.intern %></td>
+      <td><a href="/admin/tests/<%= a.test_id %>/results"><%= a.test %></a></td>
+      <td><%= a.score %>/<%= a.total %></td>
+      <td><span class="tag <%= a.passed ? 'pass' : 'fail' %>"><%= a.passed ? 'Passed' : 'Failed' %></span></td>
+      <td><%= fmt(a.taken_at) %></td>
+    </tr>
+    <% }) %>
+  </table>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>
