@@ -70,41 +70,52 @@ CREATE TABLE IF NOT EXISTS attempts (
   answers TEXT NOT NULL,          -- JSON {questionId: chosenIndex}
   taken_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+-- Password-reset links for admins. Only a hash of the token is stored.
+CREATE TABLE IF NOT EXISTS password_resets (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at INTEGER NOT NULL,     -- unix ms
+  used INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+-- Internship completion certificates (one per intern).
+CREATE TABLE IF NOT EXISTS certificates (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  cert_no TEXT NOT NULL UNIQUE,
+  intern_name TEXT NOT NULL,       -- name exactly as printed on the certificate
+  period_start TEXT NOT NULL,      -- YYYY-MM-DD
+  period_end TEXT NOT NULL,        -- YYYY-MM-DD
+  issue_date TEXT NOT NULL,        -- YYYY-MM-DD
+  issued_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `);
 
-function seed() {
-  if (db.prepare("SELECT COUNT(*) c FROM users WHERE role='admin'").get().c) return;
+// The first administrator. Override with ADMIN_* in .env if you ever need a different one.
+const ADMIN_NAME = process.env.ADMIN_NAME || 'Devaraju';
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'devaraju@peakpoints-technicalsolutions.com').toLowerCase();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Devaraju_401';
 
-  const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
-  if (!process.env.ADMIN_PASSWORD) {
-    console.warn('WARNING: using default admin password "admin123". Set ADMIN_PASSWORD in .env and change it.');
-  }
-  db.prepare("INSERT INTO users (name,email,password_hash,role) VALUES (?,?,?,'admin')").run(
-    process.env.ADMIN_NAME || 'Administrator',
-    (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase(),
-    bcrypt.hashSync(adminPass, 10)
-  );
-
-  if (process.env.SEED_DEMO === 'false') return;
-
-  // Demo data so you can try the app straight away (set SEED_DEMO=false to skip)
-  const stu = db.prepare("INSERT INTO users (name,email,password_hash,role) VALUES (?,?,?,'student')")
-    .run('Demo Intern', 'intern@example.com', bcrypt.hashSync('intern123', 10)).lastInsertRowid;
-  const course = db.prepare('INSERT INTO courses (title,description) VALUES (?,?)')
-    .run('Study Skills 101', 'A short starter course on learning effectively.').lastInsertRowid;
-  const lesson = db.prepare('INSERT INTO lessons (course_id,position,title,content) VALUES (?,?,?,?)');
-  lesson.run(course, 1, 'Plan your study time',
-    'Split your study into short blocks of 25-45 minutes with a 5-10 minute break in between.\nDecide beforehand what you will cover in each block.');
-  lesson.run(course, 2, 'Active recall',
-    'Instead of re-reading, close the book and try to write down everything you remember.\nTesting yourself is one of the most effective ways to learn.');
-  db.prepare('INSERT INTO enrollments (user_id,course_id) VALUES (?,?)').run(stu, course);
-  const test = db.prepare('INSERT INTO tests (course_id,title,pass_mark) VALUES (?,?,?)')
-    .run(course, 'Study Skills Quiz', 60).lastInsertRowid;
-  const q = db.prepare('INSERT INTO questions (test_id,text,options,correct) VALUES (?,?,?,?)');
-  q.run(test, 'How long should a focused study block be?', JSON.stringify(['5 hours', '25-45 minutes', '1 minute']), 1);
-  q.run(test, 'Which technique means testing yourself from memory?', JSON.stringify(['Passive re-reading', 'Highlighting', 'Active recall', 'Skimming']), 2);
-  q.run(test, 'What should you do between study blocks?', JSON.stringify(['Take a short break', 'Keep going without rest']), 0);
+function removeDummyData() {
+  // Accounts and the sample course that older versions created automatically.
+  db.prepare("DELETE FROM users WHERE email IN ('admin@example.com','intern@example.com')").run();
+  db.prepare("DELETE FROM courses WHERE title='Study Skills 101' AND description='A short starter course on learning effectively.'").run();
 }
-seed();
+
+function seedAdmin() {
+  const existing = db.prepare('SELECT id, role FROM users WHERE email=?').get(ADMIN_EMAIL);
+  if (existing) {
+    if (existing.role !== 'admin') console.warn('WARNING: ' + ADMIN_EMAIL + ' exists but is not an admin account.');
+    return;                                   // never overwrite: a changed/reset password must survive restarts
+  }
+  db.prepare("INSERT INTO users (name,email,password_hash,role) VALUES (?,?,?,'admin')")
+    .run(ADMIN_NAME, ADMIN_EMAIL, bcrypt.hashSync(ADMIN_PASSWORD, 10));
+  console.log('Created admin account ' + ADMIN_EMAIL + ' - please change the password after first login.');
+}
+
+removeDummyData();
+seedAdmin();
 
 module.exports = db;

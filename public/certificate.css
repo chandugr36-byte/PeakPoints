@@ -1,0 +1,51 @@
+/* Internship completion certificate. Everything is sized in cqw (1% of the certificate's width),
+   so it looks identical on screen and on paper. Page ratio 3:2 = 297 x 198 mm. */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body.cert-page { background: #e8edf5; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif; color: #0b4ab0; }
+.toolbar { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 12px 20px; background: #fff; border-bottom: 3px solid #004aad; font-size: 15px; }
+.toolbar a { color: #004aad; font-weight: 600; text-decoration: none; }
+.printbtn { background: #004aad; color: #fff; border: 0; border-radius: 6px; padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+.toolbar .hint { color: #6b7280; font-size: 13px; }
+
+.cert { position: relative; width: min(calc(100% - 32px), 1120px); aspect-ratio: 3 / 2; margin: 24px auto; container-type: inline-size;
+        background: #fff; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+.cert > * { position: absolute; }
+.deco { inset: 0; width: 100%; height: 100%; }
+
+.c-logo { left: 50%; top: 2cqw; width: 21cqw; transform: translateX(-50%); }
+.c-tagline { left: 0; right: 0; top: 16.9cqw; text-align: center; font-size: 1.25cqw; line-height: 1.6cqw; letter-spacing: .13em; }
+.c-title { left: 0; right: 0; top: 18.96cqw; margin: 0; text-align: center; white-space: nowrap; font-family: Georgia, "Times New Roman", serif;
+           font-weight: 700; font-size: 3.3cqw; line-height: 4cqw; color: #0a2a6b; }
+.c-certify { left: 0; right: 0; top: 26.3cqw; text-align: center; font-size: 1.75cqw; line-height: 2.4cqw; letter-spacing: .16em; }
+
+.c-name { left: 26.9cqw; width: 46.2cqw; top: 28.9cqw; height: 4.6cqw; line-height: 4.4cqw; text-align: center; white-space: nowrap; overflow: hidden;
+          border-bottom: .12cqw solid #0b4ab0; font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-style: italic; font-weight: 600;
+          font-size: 3cqw; color: #0a2a6b; }
+.c-name.long { font-size: 2.1cqw; }
+
+.c-l1, .c-l2, .c-para { left: 0; right: 0; text-align: center; white-space: nowrap; }
+.c-l1 { top: 34.6cqw; font-size: 1.6cqw; line-height: 2.4cqw; }
+.c-l2 { top: 36.8cqw; font-size: 1.9cqw; line-height: 2.4cqw; font-weight: 700; }
+.c-para { top: 39.57cqw; font-size: 1.6cqw; line-height: 2.47cqw; }
+.c-period { font-weight: 700; color: #0a2a6b; border-bottom: .1cqw solid #0b4ab0; padding: 0 .6cqw; }
+
+.c-meta { left: 8.85cqw; height: 2.2cqw; width: 26cqw; font-size: 1.45cqw; line-height: 2.2cqw; }
+.c-meta1 { top: 51.6cqw; } .c-meta2 { top: 54.4cqw; }
+.c-meta .col { position: absolute; left: 9.85cqw; }
+.c-meta .val { position: absolute; left: 11.2cqw; width: 14cqw; text-align: center; border-bottom: .1cqw solid #0b4ab0;
+               font-size: 1.3cqw; font-weight: 700; color: #0a2a6b; white-space: nowrap; }
+
+.c-seal { left: 43.75cqw; top: 47cqw; width: 12.37cqw; }
+.c-sign { left: 71.6cqw; top: 49.6cqw; width: 17.58cqw; }
+.c-signline { left: 68.7cqw; width: 21.7cqw; top: 55.1cqw; border-top: .1cqw solid #0b4ab0; }
+.c-sig1, .c-sig2 { left: 68.7cqw; width: 21.7cqw; text-align: center; white-space: nowrap; }
+.c-sig1 { top: 55.7cqw; font-size: 1.3cqw; line-height: 1.7cqw; }
+.c-sig2 { top: 57.5cqw; font-size: 1.05cqw; line-height: 1.5cqw; }
+
+@page { size: 297mm 198mm; margin: 0; }
+@media print {
+  body.cert-page { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .toolbar { display: none; }
+  .cert { width: 297mm; height: 198mm; margin: 0; box-shadow: none; break-inside: avoid; }
+}

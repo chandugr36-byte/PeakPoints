@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const router = express.Router();
+const certs = require('../certs');
 
 const flash = (req, type, msg) => { req.session.flash = { type, msg }; };
 const notFound = (res) => res.status(404).render('error', { title: 'Not found', message: 'That item was not found, or has not been assigned to you.' });
@@ -23,7 +24,16 @@ router.get('/', (req, res) => {
          WHERE a.user_id=? AND t.course_id=c.id AND a.passed=1) passed
     FROM enrollments e JOIN courses c ON c.id=e.course_id
     WHERE e.user_id=? ORDER BY e.assigned_at DESC`).all(req.user.id, req.user.id);
-  res.render('intern/dashboard', { title: 'My courses', courses });
+  const certificate = db.prepare('SELECT id, cert_no FROM certificates WHERE user_id=?').get(req.user.id) || null;
+  res.render('intern/dashboard', { title: 'My courses', courses, certificate });
+
+});
+
+// My internship completion certificate (only if the admin has issued one)
+router.get('/certificate', (req, res) => {
+  const cert = db.prepare('SELECT * FROM certificates WHERE user_id=?').get(req.user.id);
+  if (!cert) return notFound(res);
+  res.render('certificate', { title: 'Certificate ' + cert.cert_no, c: certs.view(cert), backUrl: '/intern' });
 });
 
 // One course: lessons + tests

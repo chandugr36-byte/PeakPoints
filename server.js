@@ -1,9 +1,22 @@
+require('dotenv').config();
+
 const express = require('express');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const path = require('path');
 const db = require('./db');
+const mailer = require('./mailer');
+
+try {
+  if (mailer.getSmtpConfig()) {
+    console.log('SMTP mail configuration loaded.');
+  } else {
+    console.warn('SMTP is not configured. Password reset emails will not be sent; set SMTP_* values in .env.');
+  }
+} catch (error) {
+  console.error('Invalid SMTP configuration:', error.message);
+}
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -56,7 +69,9 @@ app.use((req, res, next) => {
 
 // CSRF check for every POST
 app.use((req, res, next) => {
-  if (req.method === 'POST' && (!req.session || req.body._csrf !== req.session.csrf)) {
+  // File uploads (multipart) cannot carry the token in the body, so it may also arrive as ?_csrf=...
+  const sent = (req.body && req.body._csrf) || req.query._csrf;
+  if (req.method === 'POST' && (!req.session || sent !== req.session.csrf)) {
     return res.status(403).render('error', { title: 'Forbidden', message: 'Session expired. Please go back, refresh and try again.' });
   }
   next();
@@ -118,6 +133,7 @@ app.post('/login/:role', (req, res) => {
 
 app.post('/logout', (req, res) => { req.session = null; res.redirect('/'); });
 
+app.use('/', require('./routes/auth'));
 app.use('/admin', requireRole('admin'), require('./routes/admin'));
 app.use('/intern', requireRole('intern'), require('./routes/intern'));
 

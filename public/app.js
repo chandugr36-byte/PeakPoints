@@ -15,3 +15,8 @@ document.addEventListener('keydown', function (e) {
     document.querySelectorAll('details.dropdown[open]').forEach(function (d) { d.removeAttribute('open'); });
   }
 });
+
+// Buttons with data-print open the browser's print dialog (choose "Save as PDF" to download)
+document.addEventListener('click', function (e) {
+  if (e.target.closest && e.target.closest('[data-print]')) window.print();
+});

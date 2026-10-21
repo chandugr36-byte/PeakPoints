@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<div class="card narrow">
+  <h1>Forgot password</h1>
+  <% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+  <% if (sent) { %>
+    <div class="flash ok">If an administrator account exists for that email, a password reset link has been sent. It works for 60 minutes. Please check your inbox (and spam folder).</div>
+    <p><a href="/login/admin">Back to Admin Login</a></p>
+  <% } else { %>
+    <p class="muted">Enter your administrator email. We will email you a link to choose a new password.</p>
+    <form method="post" action="/forgot-password">
+      <%- csrfField() %>
+      <label>Admin email <input type="email" name="email" required autofocus></label>
+      <button class="btn">Send reset link</button>
+    </form>
+    <p class="muted"><a href="/login/admin">Back to Admin Login</a></p>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

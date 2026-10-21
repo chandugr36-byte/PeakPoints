@@ -33,6 +33,16 @@
       </ul>
     </div>
   <% }) %>
+  <h3>Import / export questions</h3>
+  <p>
+    <a class="btn secondary" href="/admin/tests/<%= test.id %>/export">Export test (.json)</a>
+    <a class="btn secondary" href="/admin/tests/<%= test.id %>/export?format=csv">Export questions (.csv)</a>
+  </p>
+  <form method="post" action="/admin/tests/<%= test.id %>/questions/import?_csrf=<%= csrf %>" enctype="multipart/form-data">
+    <label>Add questions from a .csv or .json file <input type="file" name="file" accept=".json,.csv,application/json,text/csv" required></label>
+    <p class="muted">CSV columns: question, option1-option4, correct (1-4). <a href="/admin/tests/template.csv">Download template</a>. Imported questions are added after the existing ones.</p>
+    <button class="btn">Import questions</button>
+  </form>
   <h3>Add multiple-choice question</h3>
   <form method="post" action="/admin/tests/<%= test.id %>/questions">
     <%- csrfField() %>

@@ -8,6 +8,7 @@
     <label>Password <input type="password" name="password" required></label>
     <button class="btn">Login</button>
   </form>
+  <% if (role === 'admin') { %><p><a href="/forgot-password">Forgot password?</a></p><% } %>
   <p class="muted">
     <% if (role === 'admin') { %>Are you an intern? <a href="/login/intern">Intern Login</a>
     <% } else { %>Are you an administrator? <a href="/login/admin">Admin Login</a><% } %>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · PeakPoints</title>
+  <link rel="icon" type="image/png" href="/static/img/favicon.png">
+  <link rel="stylesheet" href="/static/certificate.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body class="cert-page">
+  <div class="toolbar">
+    <a href="<%= backUrl %>">&larr; Back</a>
+    <button type="button" class="printbtn" data-print>Print / Save as PDF</button>
+    <span class="hint">In the print window choose &ldquo;Save as PDF&rdquo;, paper size as shown, margins &ldquo;None&rdquo;.</span>
+  </div>
+
+  <div class="cert">
+    <svg class="deco" viewBox="0 0 297 198" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eef4fb"/></linearGradient>
+        <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0d3b86"/><stop offset="1" stop-color="#1f5aa8"/></linearGradient>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c8922a"/><stop offset=".5" stop-color="#f3d27a"/><stop offset="1" stop-color="#c8922a"/></linearGradient>
+        <g id="corner">
+          <polygon points="0,0 62,0 0,43.9" fill="url(#navy)"/>
+          <polygon points="46,0 53,0 0,37.5 0,32.6" fill="url(#gold)"/>
+          <polygon points="56,0 57.2,0 0,40.5 0,39.6" fill="#f3d27a"/>
+        </g>
+      </defs>
+      <rect width="297" height="198" fill="url(#bg)"/>
+      <!-- faint mountains -->
+      <polygon points="205,198 276,78 297,96 297,198" fill="#dde8f6" opacity=".55"/>
+      <polygon points="228,198 266,112 297,138 297,198" fill="#eef4fb" opacity=".9"/>
+      <polygon points="252,198 281,134 297,148 297,198" fill="#f6f9fd" opacity=".9"/>
+      <!-- gold frame -->
+      <rect x="4.3" y="4" width="288.4" height="190" fill="none" stroke="#d4a23a" stroke-width=".4"/>
+      <path d="M278.5 6.8 H290 V18.4" fill="none" stroke="#d4a23a" stroke-width="1"/>
+      <path d="M7.2 180 V189.2 H18.9" fill="none" stroke="#d4a23a" stroke-width="1"/>
+      <use href="#corner"/>
+      <use href="#corner" transform="translate(297 198) rotate(180)"/>
+      <!-- divider with diamond -->
+      <line x1="65.7" y1="73.9" x2="143" y2="73.9" stroke="url(#gold)" stroke-width=".35"/>
+      <line x1="153.6" y1="73.9" x2="231.5" y2="73.9" stroke="url(#gold)" stroke-width=".35"/>
+      <polygon points="148.3,70.9 151.3,73.9 148.3,76.9 145.3,73.9" fill="#d4a23a"/>
+    </svg>
+
+    <img class="c-logo" src="/static/img/logo-cert.png" alt="PeakPoints Technical Solutions Pvt Ltd">
+    <div class="c-tagline">Turning Complex Drawings into clear solutions</div>
+    <h1 class="c-title">INTERNSHIP COMPLETION CERTIFICATE</h1>
+    <div class="c-certify">THIS IS TO CERTIFY THAT</div>
+    <div class="c-name <%= c.name.length > 30 ? 'long' : '' %>"><%= c.name %></div>
+
+    <div class="c-l1">has successfully completed the internship program at</div>
+    <div class="c-l2">Peakpoints Technical Solutions Pvt Ltd</div>
+    <div class="c-para">During the period of <span class="c-period"><%= c.period %></span>, the intern demonstrated dedication,<br>
+      enthusiasm and a strong willingness to learn and contribute to the team.<br>
+      We wish you all the best for your future endeavors.</div>
+
+    <div class="c-meta c-meta1"><span class="lbl">Date of Issue</span><span class="col">:</span><span class="val"><%= c.issued %></span></div>
+    <div class="c-meta c-meta2"><span class="lbl">Certificate No.</span><span class="col">:</span><span class="val"><%= c.certNo %></span></div>
+
+    <img class="c-seal" src="/static/img/cert-seal.png" alt="Talent builds tomorrow">
+    <img class="c-sign" src="/static/img/cert-signature.png" alt="Signature of Devaraju BK">
+    <div class="c-signline"></div>
+    <div class="c-sig1">Authorized Signatory</div>
+    <div class="c-sig2">Peakpoints Technical Solutions Pvt Ltd</div>
+  </div>
+</body>
+</html>

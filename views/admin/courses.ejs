@@ -10,15 +10,25 @@
   </form>
 </div>
 <div class="card">
+  <h2>Import / export courses</h2>
+  <p class="muted">Export saves courses with their lessons, tests and questions as a JSON file (no intern data or results). Import adds the courses in such a file as <b>new</b> courses; nothing existing is overwritten.</p>
+  <p><a class="btn secondary" href="/admin/courses/export">Export all courses</a></p>
+  <form method="post" action="/admin/courses/import?_csrf=<%= csrf %>" enctype="multipart/form-data">
+    <label>Import courses from a PeakPoints .json file <input type="file" name="file" accept=".json,application/json" required></label>
+    <button class="btn">Import courses</button>
+  </form>
+</div>
+<div class="card">
   <h2>All courses</h2>
   <% if (!courses.length) { %><p class="muted">No courses yet.</p><% } else { %>
   <table>
-    <tr><th>Title</th><th>Lessons</th><th>Tests</th><th>Interns</th><th></th></tr>
+    <tr><th>Title</th><th>Lessons</th><th>Tests</th><th>Interns</th><th></th><th></th></tr>
     <% courses.forEach(c => { %>
     <tr>
       <td><a href="/admin/courses/<%= c.id %>"><%= c.title %></a></td>
       <td><%= c.lessons %></td><td><%= c.tests %></td><td><%= c.interns %></td>
       <td><a href="/admin/courses/<%= c.id %>">Manage</a></td>
+      <td><a href="/admin/courses/<%= c.id %>/export">Export</a></td>
     </tr>
     <% }) %>
   </table>

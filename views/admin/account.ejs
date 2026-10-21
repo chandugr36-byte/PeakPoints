@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+<h1>My account</h1>
+<p class="muted"><%= user.name %> &middot; <%= user.email %></p>
+<div class="card">
+  <h2>Change password</h2>
+  <form method="post" action="/admin/account/password">
+    <%- csrfField() %>
+    <label>Current password <input type="password" name="current" required autocomplete="current-password"></label>
+    <label>New password (min 8 characters) <input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+    <label>Confirm new password <input type="password" name="confirm" required minlength="8" autocomplete="new-password"></label>
+    <button class="btn">Change password</button>
+  </form>
+  <p class="muted">Forgot your current password? Log out and use <b>Forgot password?</b> on the Admin Login page - a reset link is emailed to <%= user.email %>.</p>
+</div>
+<%- include('../partials/footer') %>

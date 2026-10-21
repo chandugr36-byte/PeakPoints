@@ -47,6 +47,34 @@
 </div>
 
 <div class="card">
+  <h2>Internship completion certificate</h2>
+  <% if (el.eligible) { %>
+    <p><span class="tag pass">Eligible</span> Passed all <%= el.total %> test(s) in the assigned course(s).</p>
+  <% } else { %>
+    <p><span class="tag fail">Not eligible yet</span> <%= el.reason %></p>
+  <% } %>
+  <% if (certificate) { %>
+    <p>Issued: <b><%= certificate.cert_no %></b> &middot; <%= certificate.issue_date %>
+      &middot; <a href="/admin/certificates/<%= certificate.id %>">View / print</a></p>
+  <% } %>
+  <form method="post" action="/admin/interns/<%= intern.id %>/certificate">
+    <%- csrfField() %>
+    <label>Name to print on the certificate <input name="cert_name" required maxlength="100" value="<%= certificate ? certificate.intern_name : intern.name %>"></label>
+    <label>Internship start date <input type="date" name="period_start" required value="<%= certificate ? certificate.period_start : certDefaults.start %>"></label>
+    <label>Internship end date <input type="date" name="period_end" required value="<%= certificate ? certificate.period_end : certDefaults.end %>"></label>
+    <% if (!el.eligible) { %>
+      <label class="check"><input type="checkbox" name="override" value="1"> Issue anyway (admin override)</label>
+    <% } %>
+    <button class="btn"><%= certificate ? 'Update certificate' : 'Issue certificate' %></button>
+  </form>
+  <% if (certificate) { %>
+  <form method="post" action="/admin/interns/<%= intern.id %>/certificate/revoke" data-confirm="Revoke this certificate? The intern will no longer see it.">
+    <%- csrfField() %><button class="btn danger">Revoke certificate</button>
+  </form>
+  <% } %>
+</div>
+
+<div class="card">
   <h2>Account</h2>
   <form method="post" action="/admin/interns/<%= intern.id %>/password">
     <%- csrfField() %>

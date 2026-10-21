@@ -2,6 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../db');
 const router = express.Router();
+router.use(require('./transfer'));
+router.use(require('./certificates'));
+const { eligibility } = require('../certs');
 
 const flash = (req, type, msg) => { req.session.flash = { type, msg }; };
 const txt = (v, max = 5000) => String(v ?? '').trim().slice(0, max);
@@ -208,6 +211,8 @@ router.get('/interns', (req, res) => {
     SELECT u.*, (SELECT COUNT(*) FROM enrollments WHERE user_id=u.id) courses,
                 (SELECT COUNT(*) FROM attempts WHERE user_id=u.id) attempts
     FROM users u WHERE role='student' ORDER BY name`).all();
+  const certs = new Map(db.prepare('SELECT user_id, id FROM certificates').all().map((c) => [c.user_id, c.id]));
+  interns.forEach((i) => { i.eligible = eligibility(i.id).eligible; i.cert_id = certs.get(i.id) || null; });
   res.render('admin/interns', { title: 'Interns', interns });
 });
 
@@ -242,7 +247,11 @@ router.get('/interns/:id', (req, res) => {
       EXISTS(SELECT 1 FROM retest_grants g WHERE g.user_id=a.user_id AND g.test_id=a.test_id) has_grant
     FROM attempts a JOIN tests t ON t.id=a.test_id
     WHERE a.user_id=? ORDER BY a.id DESC`).all(intern.id);
-  res.render('admin/intern', { title: intern.name, intern, courses, attempts });
+  const certificate = db.prepare('SELECT * FROM certificates WHERE user_id=?').get(intern.id) || null;
+  res.render('admin/intern', {
+    title: intern.name, intern, courses, attempts,
+    el: eligibility(intern.id), certificate, certDefaults: { start: String(intern.created_at).slice(0, 10), end: require('../certs').todayLocal() },
+  });
 });
 
 router.post('/interns/:id/courses', (req, res) => {
@@ -271,6 +280,22 @@ router.post('/interns/:id/delete', (req, res) => {
   db.prepare("DELETE FROM users WHERE id=? AND role='student'").run(int(req.params.id));
   flash(req, 'ok', 'Intern deleted.');
   res.redirect('/admin/interns');
+});
+
+// ---------- My account: change own password with the old password ----------
+router.get('/account', (req, res) => res.render('admin/account', { title: 'My account' }));
+
+router.post('/account/password', (req, res) => {
+  const me = db.prepare('SELECT * FROM users WHERE id=?').get(req.user.id);
+  const cur = String(req.body.current || ''), pw = String(req.body.password || ''), again = String(req.body.confirm || '');
+  if (!bcrypt.compareSync(cur, me.password_hash)) { flash(req, 'error', 'Your current password is not correct.'); return res.redirect('/admin/account'); }
+  if (pw.length < 8) { flash(req, 'error', 'The new password must be at least 8 characters.'); return res.redirect('/admin/account'); }
+  if (pw !== again) { flash(req, 'error', 'The two new passwords do not match.'); return res.redirect('/admin/account'); }
+  if (pw === cur) { flash(req, 'error', 'The new password must be different from the current one.'); return res.redirect('/admin/account'); }
+  db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(bcrypt.hashSync(pw, 10), me.id);
+  db.prepare('UPDATE password_resets SET used=1 WHERE user_id=?').run(me.id);
+  flash(req, 'ok', 'Password changed.');
+  res.redirect('/admin/account');
 });
 
 module.exports = router;

@@ -1,5 +1,12 @@
 <%- include('../partials/header') %>
 <h1>My courses</h1>
+<% if (certificate) { %>
+<div class="card result pass">
+  <h2>Internship completion certificate</h2>
+  <p>Congratulations! Your certificate (<%= certificate.cert_no %>) is ready.</p>
+  <a class="btn" href="/intern/certificate">View / print certificate</a>
+</div>
+<% } %>
 <% if (!courses.length) { %>
   <div class="card"><p>No courses have been assigned to you yet. Please check back later.</p></div>
 <% } else { %>

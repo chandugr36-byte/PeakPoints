@@ -14,11 +14,12 @@
   <h2>All interns</h2>
   <% if (!interns.length) { %><p class="muted">No interns yet.</p><% } else { %>
   <table>
-    <tr><th>Name</th><th>Email</th><th>Courses</th><th>Attempts</th><th></th></tr>
+    <tr><th>Name</th><th>Email</th><th>Courses</th><th>Attempts</th><th>Certificate</th><th></th></tr>
     <% interns.forEach(s => { %>
     <tr>
       <td><a href="/admin/interns/<%= s.id %>"><%= s.name %></a></td>
       <td><%= s.email %></td><td><%= s.courses %></td><td><%= s.attempts %></td>
+      <td><% if (s.cert_id) { %><a href="/admin/certificates/<%= s.cert_id %>">Issued</a><% } else if (s.eligible) { %><span class="tag pending">Eligible</span><% } else { %><span class="muted">-</span><% } %></td>
       <td><a href="/admin/interns/<%= s.id %>">Manage</a></td>
     </tr>
     <% }) %>

@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<div class="card narrow">
+  <h1>Choose a new password</h1>
+  <% if (typeof error !== 'undefined') { %><div class="flash error"><%= error %></div><% } %>
+  <form method="post" action="/reset-password/<%= token %>">
+    <%- csrfField() %>
+    <label>New password (min 8 characters) <input type="password" name="password" required minlength="8" autocomplete="new-password" autofocus></label>
+    <label>Confirm new password <input type="password" name="confirm" required minlength="8" autocomplete="new-password"></label>
+    <button class="btn">Change password</button>
+  </form>
+</div>
+<%- include('partials/footer') %>
