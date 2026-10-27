@@ -144,4 +144,12 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`PeakPoints running on http://localhost:${port}`));
+const server = app.listen(port, () => console.log(`PeakPoints running on http://localhost:${port}`));
+
+// Render sends SIGTERM before a restart/redeploy: finish cleanly so the last changes reach the backup.
+function shutdown() {
+  server.close(() => { try { db.close(); } catch (e) {} process.exit(0); });
+  setTimeout(() => process.exit(0), 8000).unref();
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

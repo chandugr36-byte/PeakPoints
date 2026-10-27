@@ -115,6 +115,19 @@ Notes
 - Update the app: upload new files, then `docker compose up -d --build`.
 - View logs: `docker compose logs -f app`
 
+### Render free + Backblaze B2 backup (data survives restarts)
+Render's free plan wipes the disk on every restart/redeploy/idle spin-down. The app stores everything in one SQLite
+file, so `start.sh` + `litestream.yml` (Litestream) copy that file to a Backblaze B2 bucket every few seconds and
+restore it automatically when the service starts.
+1. Backblaze: create an account -> **Buckets -> Create a Bucket** (Private). Note the bucket name and its **Endpoint**
+   (e.g. `s3.us-west-004.backblazeb2.com`).
+2. **Application Keys -> Add a New Application Key**: limit it to that bucket, access "Read and Write". Copy the
+   **keyID** and **applicationKey** (shown only once).
+3. On Render set `LITESTREAM_BUCKET`, `LITESTREAM_ENDPOINT`, `LITESTREAM_ACCESS_KEY_ID` (= keyID),
+   `LITESTREAM_SECRET_ACCESS_KEY` (= applicationKey), plus `SESSION_SECRET` and `COOKIE_SECURE=true`.
+With `LITESTREAM_BUCKET` empty the app runs normally with no backup (local PC / VPS with a persistent volume).
+Any other S3-compatible bucket (R2, S3, Supabase) works with the same variables.
+
 ### No-Docker alternative
 Any Node host works (Azure App Service, Render, Railway, a VPS with pm2 + nginx). Run `npm install && npm start`,
 set the environment variables from `.env.example` plus `COOKIE_SECURE=true`, keep the database file on a
